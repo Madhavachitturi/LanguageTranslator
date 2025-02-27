@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Translator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #733df0, #fad0c4);
+            text-align: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        h2 {
+            font-size: 2rem;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        select, textarea, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+        }
+
+        select {
+            background: #ffdde1;
+            color: #333;
+            cursor: pointer;
+        }
+
+        textarea {
+            width: 60%;
+            border: 2px solid #fff;
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+        }
+
+        button {
+            background: #733df0;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #ff5470;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 10px;
+            display: inline-block;
+            min-width: 50%;
+        }
+    </style>
+    <script>
+        async function translateText() {
+            const sourceLang = document.getElementById("sourceLang").value;
+            const targetLang = document.getElementById("targetLang").value;
+            const text = document.getElementById("textInput").value;
+            const resultDiv = document.getElementById("result");
+
+            if (!text) {
+                resultDiv.innerHTML = "<p style='color: red;'>Please enter text to translate.</p>";
+                return;
+            }
+
+            const response = await fetch("/translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ source: sourceLang, target: targetLang, text: text }),
+            });
+
+            const data = await response.json();
+            if (data.translation) {
+                resultDiv.innerHTML = `<p><strong>Translated Text:</strong> ${data.translation}</p>`;
+            } else {
+                resultDiv.innerHTML = `<p style='color: red;'>Error: ${data.error}</p>`;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>🌍 Language Translator 🌏</h2>
+    <label for="sourceLang">From: </label>
+    <select id="sourceLang">
+        <option value="en">English</option>
+        <option value="fr">French</option>
+        <option value="es">Spanish</option>
+        <option value="de">German</option>
+        <option value="hi">Hindi</option>
+    </select>
+
+    <label for="targetLang">To: </label>
+    <select id="targetLang">
+        <option value="fr">French</option>
+        <option value="en">English</option>
+        <option value="es">Spanish</option>
+        <option value="de">German</option>
+        <option value="hi">Hindi</option>
+    </select>
+
+    <br><br>
+    <textarea id="textInput" rows="4" cols="50" placeholder="Enter text to translate"></textarea>
+    <br><br>
+    <button onclick="translateText()">Translate</button>
+
+    <h3>Translation Output:</h3>
+    <div id="result"></div>
+</body>
+</html>
